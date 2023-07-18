@@ -3,5 +3,5 @@ def hello_handler(event, context):
     # ...
     return {
         'statusCode': 200,
-        'body': 'Hello, Lambda!'
+        'body': 'Hello, Lambda V1.0!'
     }
