@@ -1,0 +1,49 @@
+service: hello-lambda
+frameworkVersion: '3'
+provider:
+  name: aws
+  ecr:
+    images:
+      hello-lambda: 
+        path: ./
+  stage: ${opt:stage, 'stage'}
+  region: us-east-2
+  versionFunctions: false
+  iamRoleStatements:
+    - Effect: "Allow"
+      Action:
+        - cloudwatch:*
+        - dynamodb:*
+        - secretsmanager:*
+        - ecs:*
+        - iam:PassRole
+        - events:*
+        - logs:*
+        - s3:*
+        - es:*
+        - ses:*
+      Resource: "*"
+  environment:
+
+custom:
+  stages:
+    - stage
+    - prod
+  version: v1
+
+functions:
+  hello-lambda:
+    image:
+      name: hello-lambda
+      command:
+        - hello.hello_handler
+    name: ${self:custom.version}-${self:provider.stage}-hello-lambda
+    memorySize: 512
+    timeout: 300
+    vpc: ${file(./vpc.yml)}
+    environment:
+      STAGE:  "stage"
+    events:
+      - http:
+          path: hello
+          method: get
